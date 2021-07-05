@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AspNetCoreUseQueueBackgroundWorkItem.Controllers
 {
@@ -17,9 +18,9 @@ namespace AspNetCoreUseQueueBackgroundWorkItem.Controllers
 
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult<IEnumerable<string>>> Get()
         {
-            Queue.QueueBackgroundWorkItem(async (token) =>
+            await Queue.QueueBackgroundWorkItemAsync(async (token) =>
             {
                 await Console.Out.WriteLineAsync("Hello World!");
             });
