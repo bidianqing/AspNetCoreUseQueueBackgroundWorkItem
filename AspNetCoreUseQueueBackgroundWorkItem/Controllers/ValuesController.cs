@@ -22,6 +22,8 @@ namespace AspNetCoreUseQueueBackgroundWorkItem.Controllers
         {
             await Queue.QueueBackgroundWorkItemAsync(async (token) =>
             {
+                await Task.Delay(TimeSpan.FromSeconds(10), token);
+
                 await Console.Out.WriteLineAsync("Hello World!");
             });
 
