@@ -1,13 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace AspNetCoreUseQueueBackgroundWorkItem
+﻿namespace AspNetCoreUseQueueBackgroundWorkItem
 {
     /// <summary>
-    /// https://docs.microsoft.com/en-us/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-5.0&tabs=visual-studio#queued-background-tasks
+    /// https://learn.microsoft.com/zh-cn/aspnet/core/fundamentals/host/hosted-services?view=aspnetcore-8.0&tabs=visual-studio#queued-background-tasks
     /// </summary>
     public class QueuedHostedService : BackgroundService
     {
@@ -20,17 +14,10 @@ namespace AspNetCoreUseQueueBackgroundWorkItem
             _logger = logger;
         }
 
-
-        public override async Task StartAsync(CancellationToken cancellationToken)
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Queued Hosted Service is starting.");
 
-            await base.StartAsync(cancellationToken);
-        }
-
-
-        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
             while (!stoppingToken.IsCancellationRequested)
             {
                 var workItem = await TaskQueue.DequeueAsync(stoppingToken);

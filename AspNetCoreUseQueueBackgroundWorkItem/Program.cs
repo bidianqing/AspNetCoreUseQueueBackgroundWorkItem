@@ -1,20 +1,23 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿using AspNetCoreUseQueueBackgroundWorkItem;
 
-namespace AspNetCoreUseQueueBackgroundWorkItem
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers();
+builder.Services.AddHostedService<QueuedHostedService>();
+builder.Services.AddSingleton<IBackgroundTaskQueue>(sp =>
 {
-    public static class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+    if (!int.TryParse(builder.Configuration["QueueCapacity"], out var queueCapacity))
+        queueCapacity = 100;
 
-        public static IHostBuilder CreateWebHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+    return new BackgroundTaskQueue(queueCapacity);
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
